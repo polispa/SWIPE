@@ -7,16 +7,22 @@ function love.load()
 	ii = 1 --pointer in "falseInstruction" array above
   score = 0
   hiScore = 0
+  newHiScore = false
   posx = love.math.random(100, 550)
   posy = love.math.random(100, 350)
   arrowPosx = love.math.random(100, 550)
 	arrowPosy = love.math.random(100, 350)
   angle = 0
+  angleArrows = {0, 1.57, 3.14, 4.71}
+  a = 1
   punishment = true
-  timeStart = 120 --timer setting
+  timeStart = 60 --timer setting
   time = timeStart
   mainMenu = true
   fail = false
+  timeOut = false
+
+
   --mos = love.graphics.newImage("image/38234.jpg")
 
   love.graphics.setNewFont(30)
@@ -36,11 +42,13 @@ function love.update(dt)
   time = time - dt --countdown
 
   if time <= 0 then -- if player runs out of time
+    timeOut = true
     if hiScore < score then -- Test if high score is beaten
       hiScore = score
     end
-    score = 0 --score and timer reset
-    time = timeStart
+    time = 0 --timer reset
+
+    --score = 0 --score reset
   end
 
 end --love.update end
@@ -57,9 +65,10 @@ function love.keypressed(key, isrepeat)
       fail = true
       if hiScore < score then -- Test if high score is beaten
         hiScore = score
+        newHiScore = true
       end
       score = 0 -- score reset
-      --time = timeStart --time reset
+      angle = 0 --angle reset
       if (punishment == true and mainMenu == false) then --punishment for very bad players
           --love.system.openURL("https://www.youtube.com/embed/DSzlq7SaqTQ?rel=0&amp;autoplay=1;fs=0;autohide=0;hd=0;")
       end
@@ -67,19 +76,20 @@ function love.keypressed(key, isrepeat)
 
     if score >= 15 then -- Instruction appears randomly on canvas when 15 points is reached
       posx = love.math.random(100, 550) -- Randomly change directive position
-      posy = love.math.random(100, 350) --ditto
+      posy = love.math.random(150, 350) --ditto
       arrowPosx = love.math.random(100, 550) --ditto
       arrowPosy = love.math.random(100, 350) --ditto
     end
 
-    if score >= 30 then
+    if score >= 15 then
       angle = math.random(0, 6)
+      a = math.random(1, 4)
     end
 
     love.graphics.setBackgroundColor(love.math.random(0,200),love.math.random(0,200),love.math.random(0,200))
     i = love.math.random(1, 4) --Randomly choses directive
 
-    love.timer.sleep(0.3) --To avoid button spamming
+    --love.timer.sleep(0.3) --To avoid button spamming
 
     mainMenu = false
   end --} end of if mainMenu == false and fail == false then
@@ -88,6 +98,8 @@ function love.keypressed(key, isrepeat)
     mainMenu = false
     fail = false
     time = timeStart --time reset
+    newHiScore = false
+    timeOut = false
   end
 
 end --love.keypressed end
@@ -102,10 +114,18 @@ function love.draw()
     love.graphics.setNewFont(30) --Enter to start size
     love.graphics.printf("Press ENTER to START", 0, 300, 640, "center")
   else
-    if fail == true then -- Player makes a mistake
-      love.graphics.setColor(10, 10, 10, 200) -- OOPS color
-      love.graphics.setNewFont(100) -- OOPS size
-      love.graphics.printf("OOPS!", 0, 140, 640, "center")
+
+    if timeOut == true then
+      love.graphics.setNewFont(100)
+      love.graphics.printf("TIME OUT!", 0, 140, 640, "center")
+      love.graphics.setNewFont(30)
+      love.graphics.printf("Your score : "..score, 0, 300, 640, "center")
+      love.graphics.printf("Press ENTER to restart", 0, 390, 640, "center")
+    else
+      if fail == true then -- Player makes a mistake
+        love.graphics.setColor(10, 10, 10, 200) -- OOPS color
+        love.graphics.setNewFont(100) -- OOPS size
+        love.graphics.printf("OOPS!", 0, 140, 640, "center")
     else
       love.graphics.setColor(0, 0, 0, 200) -- header color
       love.graphics.rectangle("fill", 0, 0, 640, 80) -- header size
@@ -114,9 +134,12 @@ function love.draw()
       love.graphics.print("Score : "..score, 360, 10)
       love.graphics.print("High Score : "..hiScore, 10, 10)
       love.graphics.print("Time left : "..math.floor(time), 360, 40)
-      --love.graphics.rotate(angle)
-      love.graphics.print(instruction[i], posx, posy) -- up down left right
-      love.graphics.print(falseInstruction[ii], arrowPosx, arrowPosy)
+      love.graphics.print(instruction[i], posx, posy, angle) -- up down left right
+
+      if score >= 15 then
+        love.graphics.print(falseInstruction[ii], arrowPosx, arrowPosy, angleArrows[a])
+      end
+    end
     end
   end
 
