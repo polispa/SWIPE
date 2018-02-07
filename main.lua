@@ -4,14 +4,15 @@ function love.load()
   i = 1 --pointer in "instruction" array above
   score = 0
   hiScore = 0
+  newHiScore = false --High score beaten
   posx = love.math.random(100, 550)
   posy = love.math.random(100, 350)
-  angle = 0
+  angle = 0 -- instruction rotation
   punishment = true
   timeStart = 120 --timer setting
   time = timeStart
-  mainMenu = true
-  fail = false
+  mainMenu = true --player in main menu
+  fail = false -- player mistake
   --mos = love.graphics.newImage("image/38234.jpg")
 
   love.graphics.setNewFont(30)
@@ -20,6 +21,12 @@ function love.load()
   --abc = love.audio.newSource("sound/123.mp3", "stream")
 
   --love.audio.play(abc)
+end
+--------------------------------------------------------------
+function love.keyboard.setKeyRepeat(enable) -- avoids button spamming
+
+  enable = true
+
 end
 --------------------------------------------------------------
 function love.update(dt)
@@ -40,7 +47,9 @@ function love.update(dt)
 
 end --love.update end
 ----------------------------------------------------------------
-function love.keypressed(key, isrepeat)
+function love.keypressed(key, scancode, isrepeat)
+
+  isrepeat = true
 
   if mainMenu == false and fail == false then --{
     if key == instruction[i] then -- If correct key is pressed
@@ -52,27 +61,27 @@ function love.keypressed(key, isrepeat)
       fail = true
       if hiScore < score then -- Test if high score is beaten
         hiScore = score
+        newHiScore = true
       end
-      score = 0 -- score reset
-      --time = timeStart --time reset
+      angle = 0
       if (punishment == true and mainMenu == false) then --punishment for very bad players
           --love.system.openURL("https://www.youtube.com/embed/DSzlq7SaqTQ?rel=0&amp;autoplay=1;fs=0;autohide=0;hd=0;")
       end
     end
 
-    if score >= 15 then -- Instruction appears randomly on canvas when 15 points is reached
+    if score >= 15 then -- Instruction appears randomly on canvas (15)
       posx = love.math.random(100, 550) -- Randomly change directive position
-      posy = love.math.random(100, 350) --ditto
+      posy = love.math.random(110, 350) --ditto
     end
 
-    if score >= 30 then
+    if score >= 30  then -- Instructions rotate randomly (30)
       angle = math.random(0, 6)
     end
 
     love.graphics.setBackgroundColor(love.math.random(0,200),love.math.random(0,200),love.math.random(0,200))
     i = love.math.random(1, 4) --Randomly choses directive
 
-    love.timer.sleep(0.3) --To avoid button spamming
+    --love.timer.sleep(0.3) --To avoid button spamming
 
     mainMenu = false
   end --} end of if mainMenu == false and fail == false then
@@ -81,6 +90,8 @@ function love.keypressed(key, isrepeat)
     mainMenu = false
     fail = false
     time = timeStart --time reset
+    score = 0 -- score reset
+    newHiScore = false
   end
 
 end --love.keypressed end
@@ -99,6 +110,11 @@ function love.draw()
       love.graphics.setColor(10, 10, 10, 200) -- OOPS color
       love.graphics.setNewFont(100) -- OOPS size
       love.graphics.printf("OOPS!", 0, 140, 640, "center")
+      love.graphics.setNewFont(30)
+      love.graphics.printf("Your score : "..score, 0, 300, 640, "center")
+      if newHiScore == true then
+        love.graphics.printf("NEW HIGH SCORE!", 0, 330, 640, "center")
+      end
     else
       love.graphics.setColor(0, 0, 0, 200) -- header color
       love.graphics.rectangle("fill", 0, 0, 640, 80) -- header size
@@ -108,7 +124,7 @@ function love.draw()
       love.graphics.print("High Score : "..hiScore, 10, 10)
       love.graphics.print("Time left : "..math.floor(time), 360, 40)
       --love.graphics.rotate(angle)
-      love.graphics.print(instruction[i], posx, posy) -- up down left right
+      love.graphics.print(instruction[i], posx, posy, angle) -- up down left right
     end
   end
 
