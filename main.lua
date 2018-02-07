@@ -1,35 +1,40 @@
+
 function love.load()
 
   instruction = {"up", "right", "down", "left"}
-	i = 1 --pointer in "instruction" array above
-	falseInstruction = {"--->", "<---"} --test arrows
+  i = 1 --pointer in "instruction" array above
+  falseInstruction = {"--->", "<---"} --test arrows
 	ii = 1 --pointer in "falseInstruction" array above
   score = 0
   hiScore = 0
   posx = love.math.random(100, 550)
   posy = love.math.random(100, 350)
-	arrowPosx = love.math.random(100, 550)
+  arrowPosx = love.math.random(100, 550)
 	arrowPosy = love.math.random(100, 350)
-  --angle = 0
-  fail = false
+  angle = 0
   punishment = true
   timeStart = 120 --timer setting
   time = timeStart
   mainMenu = true
+  fail = false
+  --mos = love.graphics.newImage("image/38234.jpg")
 
   love.graphics.setNewFont(30)
   love.graphics.setBackgroundColor(0, 220, 255)
+
   --abc = love.audio.newSource("sound/123.mp3", "stream")
+
   --love.audio.play(abc)
 end
-
 --------------------------------------------------------------
-
 function love.update(dt)
+
   if love.keyboard.isDown("escape")then --game exit
     love.event.quit()
   end
+
   time = time - dt --countdown
+
   if time <= 0 then -- if player runs out of time
     if hiScore < score then -- Test if high score is beaten
       hiScore = score
@@ -37,67 +42,69 @@ function love.update(dt)
     score = 0 --score and timer reset
     time = timeStart
   end
-end
+
+end --love.update end
 ----------------------------------------------------------------
 function love.keypressed(key, isrepeat)
 
+  if mainMenu == false and fail == false then --{
+    if key == instruction[i] then -- If correct key is pressed
+      score = score + 1 --score add
+      punishment = false
+    end
 
-if mainMenu == false and fail == false then
-  if key == instruction[i] then -- If correct key is pressed
-    score = score + 1 --score add
-    punishment = false
+    if key ~= instruction[i] then -- If wrong key is pressed
+      fail = true
+      if hiScore < score then -- Test if high score is beaten
+        hiScore = score
+      end
+      score = 0 -- score reset
+      --time = timeStart --time reset
+      if (punishment == true and mainMenu == false) then --punishment for very bad players
+          --love.system.openURL("https://www.youtube.com/embed/DSzlq7SaqTQ?rel=0&amp;autoplay=1;fs=0;autohide=0;hd=0;")
+      end
+    end
+
+    if score >= 15 then -- Instruction appears randomly on canvas when 15 points is reached
+      posx = love.math.random(100, 550) -- Randomly change directive position
+      posy = love.math.random(100, 350) --ditto
+      arrowPosx = love.math.random(100, 550) --ditto
+      arrowPosy = love.math.random(100, 350) --ditto
+    end
+
+    if score >= 30 then
+      angle = math.random(0, 6)
+    end
+
+    love.graphics.setBackgroundColor(love.math.random(0,200),love.math.random(0,200),love.math.random(0,200))
+    i = love.math.random(1, 4) --Randomly choses directive
+
+    love.timer.sleep(0.3) --To avoid button spamming
+
+    mainMenu = false
+  end --} end of if mainMenu == false and fail == false then
+
+  if key == "return" then -- To launch game and exit main menu
+    mainMenu = false
+    fail = false
+    time = timeStart --time reset
   end
 
-  if key ~= instruction[i] then -- If wrong key is pressed
-    fail = true
-    if hiScore < score then -- Test if high score is beaten
-      hiScore = score
-    end
-    score = 0 -- score reset
-    --time = timeStart --time reset
-    if (punishment == true and mainMenu == false) then --punishment for very bad players
-      --love.system.openURL("https://www.youtube.com/embed/DSzlq7SaqTQ?rel=0&amp;autoplay=1;fs=0;autohide=0;hd=0;")
-    end
-  end
-
-if score >= 15 then -- Directive appears randomly on canvas when 15 points is reached
-  posx = love.math.random(100, 550) -- Randomly change directive position
-  posy = love.math.random(100, 350) --ditto
-  arrowPosx = love.math.random(100, 550) --ditto
-	arrowPosy = love.math.random(100, 350) --ditto
-end
-
-if score >= 30 then
-  --angle = math.random(0, 6)
-end
-
-love.graphics.setBackgroundColor(love.math.random(0,200),love.math.random(0,200),love.math.random(0,200))
-i = love.math.random(1, 4) --Randomly choses directive
-love.timer.sleep(0.3) --To avoid button spamming
-mainMenu = false
-end
-
-if key == "return" then -- To launch game and exit main menu
-mainMenu = false
-fail = false
-time = timeStart --time reset
-end
-
-end
+end --love.keypressed end
 --------------------------------------------------------------
 function love.draw()
 
-  if mainMenu == true then
+  if mainMenu == true then --Player in main menu
     --love.graphics.draw(mos, 500, 390, 0, 0.2)
-    love.graphics.setColor(10, 10, 10, 200)
-    love.graphics.setNewFont(100)
+    love.graphics.setColor(10, 10, 10, 200) --Swipe & Enter to start logo color
+    love.graphics.setNewFont(100) --Swipe logo size
     love.graphics.printf("SWIPE", 0, 140, 640, "center")
-    love.graphics.setNewFont(30)
+    love.graphics.setNewFont(30) --Enter to start size
     love.graphics.printf("Press ENTER to START", 0, 300, 640, "center")
   else
-    if fail == true then
-      love.graphics.setColor(10, 10, 10, 200)
-      love.graphics.setNewFont(100)
+    if fail == true then -- Player makes a mistake
+      love.graphics.setColor(10, 10, 10, 200) -- OOPS color
+      love.graphics.setNewFont(100) -- OOPS size
       love.graphics.printf("OOPS!", 0, 140, 640, "center")
     else
       love.graphics.setColor(0, 0, 0, 200) -- header color
@@ -108,8 +115,9 @@ function love.draw()
       love.graphics.print("High Score : "..hiScore, 10, 10)
       love.graphics.print("Time left : "..math.floor(time), 360, 40)
       --love.graphics.rotate(angle)
-      love.graphics.print(instruction[i], posx, posy)
+      love.graphics.print(instruction[i], posx, posy) -- up down left right
       love.graphics.print(falseInstruction[ii], arrowPosx, arrowPosy)
     end
-end
-end
+  end
+
+end --love.draw end
