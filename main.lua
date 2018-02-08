@@ -17,6 +17,7 @@ function love.load()
   mainMenu = true --player in main menu
   fail = false -- player mistake
   timeOut = false --time out
+  mToggle = true -- music switch
 
   love.graphics.setNewFont(30)
   love.graphics.setBackgroundColor(0, 220, 255)
@@ -96,6 +97,14 @@ function love.keypressed(key, scancode, isrepeat)
     angle = 0
   end
 
+  if key == "m" then -- music player
+    mToggle = not mToggle
+    if mToggle == false then
+      love.audio.stop(percival)
+    else
+      love.audio.play(percival)
+    end
+  end
 end --love.keypressed end
 --------------------------------------------------------------
 function love.draw(dt)
@@ -109,6 +118,7 @@ function love.draw(dt)
     love.graphics.setNewFont(15) -- credits size
     love.graphics.printf("Coded (with Love) by Maxime Leconte and Yann Gaudemer", 0, 350, 640, "center")
     love.graphics.print("Alpha Build", 500, 10)
+    love.graphics.print("Press M to start/stop music", 10, 10)
   else
     if timeOut == true then --Player runs out of time
       love.graphics.setNewFont(100)
