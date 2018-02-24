@@ -125,7 +125,7 @@ function love.draw(dt)
     love.graphics.printf("Press ENTER to START", 0, 300, 640, "center")
     love.graphics.setFont(quicksandS) -- credits size
     love.graphics.printf("Coded (with Love) by Maxime Leconte and Yann Gaudemer", 0, 350, 640, "center")
-    love.graphics.print("Alpha Build", 500, 10)
+    love.graphics.print("Alpha Build 2", 500, 10)
     love.graphics.print("Press M to start/stop music", 10, 10)
   else
     if timeOut == true then --Player runs out of time
