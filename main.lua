@@ -12,7 +12,7 @@ function love.load()
   --angleArrows = {0, 1.57, 3.14, 4.71}
   --a = 1
   angle = 0 -- instruction rotation
-  timeStart = 5 --timer setting
+  timeStart = 30 --timer setting
   time = timeStart
   mainMenu = true --player in main menu
   fail = false -- player mistake
