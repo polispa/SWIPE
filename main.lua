@@ -19,8 +19,15 @@ function love.load()
   timeOut = false --time out
   mToggle = true -- music switch
 
-  love.graphics.setNewFont(30)
+--font type list----------------------------------------------
+  quicksandL = love.graphics.newFont("font/Quicksand_Bold.otf", 100)
+  quicksandM = love.graphics.newFont("font/Quicksand_Book.otf", 30)
+  quicksandS = love.graphics.newFont("font/Quicksand_Book.otf", 15)
+  quicksandI = love.graphics.newFont("font/Quicksand_Bold.otf", 30)
+  ------------------------------------------------------------
   love.graphics.setBackgroundColor(0, 220, 255)
+  vignette = love.graphics.newImage("image/vignette.png") --vignette effect
+
 
   percival = love.audio.newSource("sound/percival.mp3", "stream")
 
@@ -54,7 +61,7 @@ end --love.update end
 ----------------------------------------------------------------
 function love.keypressed(key, scancode, isrepeat)
 
-  isrepeat = true
+  isrepeat = true --anti button spam
 
   if mainMenu == false and fail == false and timeOut == false then --{
     if key == "up" or key == "down" or key == "left" or key == "right" then
@@ -90,11 +97,11 @@ function love.keypressed(key, scancode, isrepeat)
   if key == "return" then -- To launch game and exit main menu
     mainMenu = false
     fail = false
+    timeOut = false
+    angle = 0
     time = timeStart --time reset
     score = 0 -- score reset
     newHiScore = false
-    timeOut = false
-    angle = 0
   end
 
   if key == "m" then -- music player
@@ -111,39 +118,40 @@ function love.draw(dt)
 
   if mainMenu == true then --Player in main menu
     love.graphics.setColor(10, 10, 10, 200) --Swipe & Enter to start logo color
-    love.graphics.setNewFont(100) --"Swipe" logo size
+    love.graphics.setFont(quicksandL) --"Swipe" logo size
     love.graphics.printf("SWIPE", 0, 140, 640, "center")
-    love.graphics.setNewFont(30) --"Enter to start" size
+    --love.graphics.setNewFont(30) --"Enter to start" size
+    love.graphics.setFont(quicksandM)
     love.graphics.printf("Press ENTER to START", 0, 300, 640, "center")
-    love.graphics.setNewFont(15) -- credits size
+    love.graphics.setFont(quicksandS) -- credits size
     love.graphics.printf("Coded (with Love) by Maxime Leconte and Yann Gaudemer", 0, 350, 640, "center")
     love.graphics.print("Alpha Build", 500, 10)
     love.graphics.print("Press M to start/stop music", 10, 10)
   else
     if timeOut == true then --Player runs out of time
-      love.graphics.setNewFont(100)
+      love.graphics.setFont(quicksandL)
       love.graphics.printf("TIME OUT!", 0, 140, 640, "center")
-      love.graphics.setNewFont(30)
+      love.graphics.setFont(quicksandM)
       love.graphics.printf("Your score : "..score, 0, 300, 640, "center")
       if newHiScore == true then
         love.graphics.printf("NEW HIGH SCORE!", 0, 330, 640, "center")
       end
       love.graphics.printf("Press ENTER to restart", 0, 390, 640, "center")
-    end
-    if fail == true then -- Player makes a mistake
+    --end
+    elseif fail == true then -- Player makes a mistake
       love.graphics.setColor(255, 255, 255, 255) -- OOPS color
-      love.graphics.setNewFont(100) -- OOPS size
+      love.graphics.setFont(quicksandL) -- OOPS size
       love.graphics.printf("OOPS!", 0, 140, 640, "center")
-      love.graphics.setNewFont(30)
+      love.graphics.setFont(quicksandM)
       love.graphics.printf("Your score : "..score, 0, 300, 640, "center")
       if newHiScore == true then
         love.graphics.printf("NEW HIGH SCORE!", 0, 330, 640, "center")
       end
       love.graphics.printf("Press ENTER to restart", 0, 390, 640, "center")
-    else
+    else --in-game
       love.graphics.setColor(0, 0, 0, 200) -- header color
       love.graphics.rectangle("fill", 0, 0, 640, 80) -- header size
-      love.graphics.setNewFont(30)
+      love.graphics.setFont(quicksandM)
       love.graphics.setColor(255, 255, 255, 255) -- font color
       love.graphics.print("Score : "..score, 360, 10)
       love.graphics.print("High Score : "..hiScore, 10, 10)
@@ -152,8 +160,10 @@ function love.draw(dt)
   end
 
   if mainMenu == false and fail == false and timeOut == false then
+    love.graphics.setFont(quicksandI)
     love.graphics.print(instruction[i], posx, posy, angle) -- up down left right
   end
 
+  love.graphics.draw(vignette, 0, 0) --vignette effect
 end --love.draw end
 --------------------------------------------------------------
