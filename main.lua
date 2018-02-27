@@ -12,7 +12,7 @@ function love.load()
   --angleArrows = {0, 1.57, 3.14, 4.71}
   --a = 1
   angle = 0 -- instruction rotation
-  timeStart = 30 --timer setting
+  timeStart = 31 --timer setting
   time = timeStart
   mainMenu = true --player in main menu
   fail = false -- player mistake
@@ -24,22 +24,26 @@ function love.load()
   quicksandM = love.graphics.newFont("font/Quicksand_Book.otf", 30)
   quicksandS = love.graphics.newFont("font/Quicksand_Book.otf", 15)
   quicksandI = love.graphics.newFont("font/Quicksand_Bold.otf", 30)
+  quicksandTut = love.graphics.newFont("font/Quicksand_Bold.otf", 70)
   ------------------------------------------------------------
   love.graphics.setBackgroundColor(0, 220, 255)
   vignette = love.graphics.newImage("image/vignette.png") --vignette effect
+  keys = love.graphics.newImage("image/arrows.png") --keys tutorial
+  keyW = keys:getWidth()
+  keyH = keys:getHeight()
 
 
   percival = love.audio.newSource("sound/percival.mp3", "stream")
 
   love.audio.play(percival) -- Play BGM
 end
---------------------------------------------------------------
+--------------------------------------------------------------setKeyRepeat
 function love.keyboard.setKeyRepeat(enable) -- avoids button spamming
 
   enable = true
 
 end
---------------------------------------------------------------
+--------------------------------------------------------------Update
 function love.update(dt)
 
   if love.keyboard.isDown("escape")then --game exit
@@ -58,11 +62,13 @@ function love.update(dt)
   end
 
 end --love.update end
-----------------------------------------------------------------
+----------------------------------------------------------------Keypressed
 function love.keypressed(key, scancode, isrepeat)
 
-  isrepeat = true --anti button spam
+  isrepeat = true --anti button-spam
 
+
+--Arrow key detections
   if mainMenu == false and fail == false and timeOut == false then --{
     if key == "up" or key == "down" or key == "left" or key == "right" then
       if key == instruction[i] then -- If correct key is pressed
@@ -76,7 +82,7 @@ function love.keypressed(key, scancode, isrepeat)
           newHiScore = true
         end
       end
-
+--Difficulty rise
       if score >= 15 then -- Instruction appears randomly on canvas (15)
         posx = love.math.random(100, 550) -- Randomly change directive position
         posy = love.math.random(110, 350) --ditto
@@ -86,7 +92,7 @@ function love.keypressed(key, scancode, isrepeat)
         angle = love.math.random(0, 6)
         --a = math.random(1, 4)
       end
-
+--Background color change
       love.graphics.setBackgroundColor(love.math.random(0,200),love.math.random(0,200),love.math.random(0,200))
       i = love.math.random(1, 4) --Randomly choses directive
 
@@ -94,7 +100,8 @@ function love.keypressed(key, scancode, isrepeat)
     end -- up down right left condition
   end --} end of if mainMenu == false and fail == false then
 
-  if key == "return" then -- To launch game and exit main menu
+-- To launch game and exit main menu
+  if key == "return" then
     mainMenu = false
     fail = false
     timeOut = false
@@ -104,6 +111,7 @@ function love.keypressed(key, scancode, isrepeat)
     newHiScore = false
   end
 
+--Music mute
   if key == "m" then -- music player
     mToggle = not mToggle
     if mToggle == false then
@@ -113,21 +121,23 @@ function love.keypressed(key, scancode, isrepeat)
     end
   end
 end --love.keypressed end
---------------------------------------------------------------
+--------------------------------------------------------------Draw
 function love.draw(dt)
 
+--Main menu
   if mainMenu == true then --Player in main menu
     love.graphics.setColor(10, 10, 10, 200) --Swipe & Enter to start logo color
     love.graphics.setFont(quicksandL) --"Swipe" logo size
     love.graphics.printf("SWIPE", 0, 140, 640, "center")
-    --love.graphics.setNewFont(30) --"Enter to start" size
     love.graphics.setFont(quicksandM)
     love.graphics.printf("Press ENTER to START", 0, 300, 640, "center")
     love.graphics.setFont(quicksandS) -- credits size
     love.graphics.printf("Coded (with Love) by Maxime Leconte and Yann Gaudemer", 0, 350, 640, "center")
-    love.graphics.print("Alpha Build", 500, 10)
+    love.graphics.print("Alpha Build 2", 500, 10)
     love.graphics.print("Press M to start/stop music", 10, 10)
   else
+
+--Time out screen
     if timeOut == true then --Player runs out of time
       love.graphics.setFont(quicksandL)
       love.graphics.printf("TIME OUT!", 0, 140, 640, "center")
@@ -137,7 +147,8 @@ function love.draw(dt)
         love.graphics.printf("NEW HIGH SCORE!", 0, 330, 640, "center")
       end
       love.graphics.printf("Press ENTER to restart", 0, 390, 640, "center")
-    --end
+
+--Oops screen
     elseif fail == true then -- Player makes a mistake
       love.graphics.setColor(255, 255, 255, 255) -- OOPS color
       love.graphics.setFont(quicksandL) -- OOPS size
@@ -159,7 +170,71 @@ function love.draw(dt)
     end
   end
 
+---------------------------------Messages
+--Tutorial message
+  if score == 0 and fail == false and timeOut == false and mainMenu == false then
+    love.graphics.setColor(0, 0, 0, 60)
+    love.graphics.setFont(quicksandTut)
+    love.graphics.printf("FOLLOW", 0, 110, 640, "center")
+    love.graphics.printf("INSTRUCTIONS", 0, 380, 640, "center")
+    love.graphics.draw(keys, 320, 270, math.rad(0), 0.75, 0.75, keyW / 2, keyH / 2)
+  end
+
+--Random placement start message
+if score >= 13 and score <= 15 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandTut)
+  love.graphics.printf("A", 0, 110, 640, "center")
+end
+if score >= 14 and score <= 15 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandTut)
+  love.graphics.printf("LITTLE", 0, 240, 640, "center")
+end
+if score == 15 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("HARDER", 0, 380, 640, "center")
+end
+
+--Random rotation start message
+if score >= 28 and score <= 30 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("HARDER", 0, 110, 640, "center")
+end
+if score >= 29 and score <= 30 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("HARDER", 0, 240, 640, "center")
+end
+if score == 30 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("HARDER", 0, 380, 640, "center")
+end
+
+--Give up message
+if score >= 48 and score <= 50 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("JUST", 0, 110, 640, "center")
+end
+if score >= 49 and score <= 50 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("GIVE", 0, 240, 640, "center")
+end
+if score == 50 and fail == false and timeOut == false and mainMenu == false then
+  love.graphics.setColor(0, 0, 0, 60)
+  love.graphics.setFont(quicksandL)
+  love.graphics.printf("UP", 0, 380, 640, "center")
+end
+---------------------------------
+
+--Written instructions
   if mainMenu == false and fail == false and timeOut == false then
+    love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setFont(quicksandI)
     love.graphics.print(instruction[i], posx, posy, angle) -- up down left right
   end
