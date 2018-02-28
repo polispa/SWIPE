@@ -32,10 +32,15 @@ function love.load()
   keyW = keys:getWidth()
   keyH = keys:getHeight()
 
-
+------------------------Sound
   percival = love.audio.newSource("sound/percival.mp3", "stream")
+  oopsS = love.audio.newSource("sound/oops.ogg", "static")
+  flashS = love.audio.newSource("sound/flash.ogg", "static")
+  timeOutS = love.audio.newSource("sound/timeout.ogg", "static")
 
   love.audio.play(percival) -- Play BGM
+  percival:setVolume(0.4)
+  oopsS:setVolume(0.4)
 end
 --------------------------------------------------------------setKeyRepeat
 function love.keyboard.setKeyRepeat(enable) -- avoids button spamming
@@ -54,6 +59,9 @@ function love.update(dt)
     time = time - dt --countdown
 
     if time <= 0 then -- if player runs out of time
+      timeOutS:setLooping(true)
+      percival:setVolume(0.01)
+      love.audio.play(timeOutS) --time out sound
       timeOut = true
       if hiScore < score then -- Test if high score is beaten
         hiScore = score
@@ -67,6 +75,11 @@ function love.keypressed(key, scancode, isrepeat)
 
   isrepeat = true --anti button-spam
 
+--messages sound effect
+  if score >= 12 and score <= 14 or score >= 27 and score <= 29 then
+    love.audio.rewind(flashS)
+    love.audio.play(flashS)
+  end
 
 --Arrow key detections
   if mainMenu == false and fail == false and timeOut == false then --{
@@ -77,6 +90,8 @@ function love.keypressed(key, scancode, isrepeat)
 
       if key ~= instruction[i] then -- If wrong key is pressed
         fail = true
+        love.audio.play(oopsS)
+        percival:setPitch(0.5) --music distortion
         if hiScore < score then -- Test if high score is beaten
           hiScore = score
           newHiScore = true
@@ -109,6 +124,9 @@ function love.keypressed(key, scancode, isrepeat)
     time = timeStart --time reset
     score = 0 -- score reset
     newHiScore = false
+    percival:setPitch(1)
+    percival:setVolume(0.4)
+    love.audio.stop(timeOutS)
   end
 
 --Music mute
